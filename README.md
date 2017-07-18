@@ -19,7 +19,7 @@ Let's say you have a Document Type attribute. In the json config file just write
 				"providerName": "registrationapp",
 				"fragmentId": "field/personAttributeWithConcept",
 				"config": {
-					"conceptId": "163147",
+					"conceptId": "163147",//person attribute foreign key
 					"maxResults": 15
 				}
 			}
