@@ -3,7 +3,7 @@ Registration application with some extensions
 
 By this time it has only one add-on. PersonAttributeWithConcept field was added.
 
-# Example of usage of personAttributeWithConcept field
+## Example of usage of personAttributeWithConcept field
 
 Let's say you have an Document Type attribute. In the json config file just write this:
 ```
