@@ -27,6 +27,7 @@
 
 <% if (!config.ignoreCheckForSimilarNames) { %>
 <script type="text/javascript">
+
     jq(function() {
         jq("#${ config.id }-field" ).autocomplete({
             source: function( request, response ) {
