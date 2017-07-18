@@ -40,12 +40,14 @@ public class PersonAttributeWithConceptFragmentController {
 		
 		int resultCount=0;
 		for (ConceptAnswer conceptAnswer : conceptAnswers) {
-			if(resultCount==Integer.parseInt(maxResults))
+			if(resultCount==Integer.parseInt(maxResults)){
 				break;
+			}
 			conceptMap = new HashMap<String, Object>();
 			String fullname = conceptAnswer.getAnswerConcept().getFullySpecifiedName(locale).getName();
-			if(fullname.compareToIgnoreCase(searchPhrase)<0)
+			if(fullname.compareToIgnoreCase(searchPhrase)<0){
 				continue;
+			}
 			conceptMap.put("label", fullname);
 			conceptMap.put("value", fullname);
 			collection.add(conceptMap);
