@@ -5,47 +5,48 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.api.ConceptService;
 import org.openmrs.module.registrationapp.RegistrationAppUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
+import org.openmrs.util.LocaleUtility;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/*
- * @author Saltanat Alikhanova
- * https://github.com/salta-kozbagarova
- * 
- * Fragment Controller that is used for coded person attributes with a foreign key to the coded concept.
- * Retrieves concept answers that match to the search phrase in a given quantity
- * @param searchPhrase a phrase concept answers has to match
- * @param maxResults quantity of concept answers
- * @param conceptId id of a concept that person attribute is related to
- * @return Collection
- */
-public class PersonAttributeWithConceptFragmentController {
+public class ConceptFragmentController {
 
 	public Collection<Map<String, ? extends Object>> getConcepts(
 			@SpringBean("conceptService") ConceptService conceptService,
 			@RequestParam(value = "term", required = true) String searchPhrase,
-			@RequestParam(value = "maxResults", required = true) String maxResults,
-			@RequestParam(value = "conceptId", required = true) String conceptId){
+			@RequestParam(value = "conceptId", required = true) String conceptId,
+			@RequestParam(value = "maxResults", required = false) String maxResults){
 		
 		Concept concept = RegistrationAppUtils.getConcept(conceptId, conceptService);
 		Collection<Map<String, ? extends Object>> collection = new ArrayList<Map<String,? extends Object>>();
 		Map<String, Object> conceptMap;
-		Locale locale = new Locale("ru");
-		Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
+		Locale locale = Locale.ENGLISH;
+		if(Pattern.matches(".*\\p{InCyrillic}.*", searchPhrase)){
+			locale = new Locale("ru");
+		}
 		
+		Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
+		int answersSize = conceptAnswers.size();
 		int resultCount=0;
+		maxResults = (maxResults==null || maxResults.isEmpty()) ? "20" : maxResults;
+		
+		//Checking if the concepts should be autocomplete or returned fully as a dropDown
+		//if concept answers size is less than maxresults then it is dropDown
+		boolean isDropDown = answersSize<=Integer.parseInt(maxResults);
+				
 		for (ConceptAnswer conceptAnswer : conceptAnswers) {
-			if(resultCount==Integer.parseInt(maxResults)){
+			if(isDropDown != true && resultCount==Integer.parseInt(maxResults)){
 				break;
 			}
 			conceptMap = new HashMap<String, Object>();
 			String fullname = conceptAnswer.getAnswerConcept().getFullySpecifiedName(locale).getName();
-			if(fullname.compareToIgnoreCase(searchPhrase)<0){
+			if(isDropDown != true && !fullname.toLowerCase().contains(searchPhrase.toLowerCase())){
 				continue;
 			}
 			conceptMap.put("label", fullname);

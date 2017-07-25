@@ -1,7 +1,6 @@
 <%
     config.require("formFieldName")
     config.require("conceptId")
-    config.require("maxResults")
 %>
 
 <script type="text/javascript">
@@ -10,7 +9,7 @@
         
         jq('#${ config.id }-field').autocomplete({
             source: function(request, response) {
-                var ajaxUrl = '${ ui.actionLink("registrationapp", "personAttributeWithConcept", "getConcepts")}';
+                var ajaxUrl = '${ ui.actionLink("registrationapp", "concept", "getConcepts")}';
                 if(xhr){
                     xhr.abort();
                     xhr = null;
@@ -18,12 +17,12 @@
                 xhr= jq.ajax({
                     url: ajaxUrl,
                     dataType: 'json',
-                    data: { term: request.term , maxResults: ${config.maxResults} ? ${config.maxResults} : 10, conceptId: ${config.conceptId} } ,
+                    data: { term: request.term, conceptId: ${config.conceptId}, maxResults: ${config.maxResults} ? ${config.maxResults} : 20 },
                     success: function (data) {
                         if (data.length == 0){
                             data.push({
                                value: 0,
-                               label: '${ ui.message("emr.patient.notFound")}'
+                               label: '${ ui.message("registrationapp.concept.notFound") }'
                             });
                         }
                         
@@ -33,7 +32,7 @@
                      xhr = null;
                 }).error(function(){
                      xhr = null;
-                     console.log("error on searching for patients");
+                     console.log("error on searching for concepts");
                 });
             },
             autoFocus: false,
@@ -57,5 +56,3 @@
     ${ ui.message("emr.optional") }
     <% } %>
 </p>
-
-
