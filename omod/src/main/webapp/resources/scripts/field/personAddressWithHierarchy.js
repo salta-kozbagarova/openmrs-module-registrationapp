@@ -25,14 +25,15 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
     var queryCache = {};
 
     // uses the cache
-    function queryWithCallback(searchString, callback) {
+    function queryWithCallback(searchString, index, callback) {
         if (searchString in queryCache) {
             callback(queryCache[searchString]);
             return null;
         }
         else {
             return $.getJSON('/' + OPENMRS_CONTEXT_PATH + '/module/addresshierarchy/ajax/getChildAddressHierarchyEntries.form', {
-                searchString: searchString
+                searchString: searchString,
+                index: index
             }, function(result) {
                 queryCache[searchString] = result;
                 callback(result);
@@ -43,9 +44,9 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
     // starting from the top, load whatever we can (pre-filling levels if they only have one option, pre-fetching options
     // for the first level with choices
     function preloadLevels(level) {
-        var searchString = searchStringUntil(level.addressField);
+        var searchString = searchStringUntil(level);
         if (searchString != null) {
-            queryWithCallback(searchString, function (result) {
+            queryWithCallback(searchString, level.index, function (result) {
                 if (result.length == 1) {
                     setValue(level.addressField, result[0].name);
                     preloadLevels(levelAfter(level.addressField));
@@ -117,8 +118,12 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
         return nextLevels.length > 0 ? nextLevels[0] : null;
     }
 
-    function searchStringUntil(addressField) {
+    function searchStringUntil(level) {
+    	var addressField = level.addressField;
         var somethingEmpty = false;
+        if(level.nonHierarchical){
+        	return null;
+        }
         var result = _.map(levelsBefore(addressField), function (level) {
             var val = getValue(level.addressField);
             if (val == '') {
@@ -189,11 +194,11 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                         element.xhr.abort();
                     }
                     var level = levelFor(addressField);
-                    var searchString = searchStringUntil(level.addressField);
-                    if(!searchString && level.index != 0) {
-                        return; // only allow empty string searches at the top level, to prevent UHM-1983
+                    var searchString = searchStringUntil(level);
+                    if(!searchString && level.index != 0 && !level.nonHierarchical) {
+                        return; // only allow empty string searches at the top or non-hierarchical level, to prevent UHM-1983
                     }
-                    element.xhr = queryWithCallback(searchString, function (result) {
+                    element.xhr = queryWithCallback(searchString, level.index, function (result) {
                         element.xhr = null;
                         element.data('legalValues', _.pluck(result, 'name'));
                         var regex = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i"); // case insensitive
