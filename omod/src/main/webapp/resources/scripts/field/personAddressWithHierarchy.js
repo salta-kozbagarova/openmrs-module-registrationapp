@@ -23,19 +23,31 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
     // our usage of the jquery-ui autocomplete leads to lots of unnecessary queries for the same thing, so we use this
     // to cache the results
     var queryCache = {};
+    // non-hierarchical levels' search string is always null, so we need to cache their results under different keys
+    // inside of 'nonHierarchical' key
+    queryCache['nonHierarchical'] = {};
 
     // uses the cache
-    function queryWithCallback(searchString, index, callback) {
+    function queryWithCallback(searchString, level, callback) {
         if (searchString in queryCache) {
             callback(queryCache[searchString]);
             return null;
         }
+        else if(level.nonHierarchical && (level.index in queryCache['nonHierarchical'])){
+        	callback(queryCache['nonHierarchical'][level.index]);
+			return null;
+        }
         else {
             return $.getJSON('/' + OPENMRS_CONTEXT_PATH + '/module/addresshierarchy/ajax/getChildAddressHierarchyEntries.form', {
                 searchString: searchString,
-                index: index
+                index: level.index
             }, function(result) {
-                queryCache[searchString] = result;
+            	if(level.nonHierarchical){
+					queryCache['nonHierarchical'][level.index] = result;
+				}
+            	else{
+            		queryCache[searchString] = result;
+            	}
                 callback(result);
             });
         }
@@ -46,7 +58,7 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
     function preloadLevels(level) {
         var searchString = searchStringUntil(level);
         if (searchString != null) {
-            queryWithCallback(searchString, level.index, function (result) {
+            queryWithCallback(searchString, level, function (result) {
                 if (result.length == 1) {
                     setValue(level.addressField, result[0].name);
                     preloadLevels(levelAfter(level.addressField));
@@ -198,7 +210,7 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     if(!searchString && level.index != 0 && !level.nonHierarchical) {
                         return; // only allow empty string searches at the top or non-hierarchical level, to prevent UHM-1983
                     }
-                    element.xhr = queryWithCallback(searchString, level.index, function (result) {
+                    element.xhr = queryWithCallback(searchString, level, function (result) {
                         element.xhr = null;
                         element.data('legalValues', _.pluck(result, 'name'));
                         var regex = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i"); // case insensitive
