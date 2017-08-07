@@ -196,7 +196,13 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
     	$(this).click(function(e){
     		e.preventDefault();
     		var level = levelFor(addressField);
-        	var parentEntryId = level.index == 0 ? null : levels[level.index-1].lastSelectionId;
+    		var parentEntryId;
+    		if(level.index == 0 || level.nonHierarchical){
+    			parentEntryId = null;
+    		}
+    		else{
+    			parentEntryId = levels[level.index-1].lastSelectionId;
+    		}
         	var val = getValue(level.addressField);
         	var searchString = searchStringUntil(level);
     		$.ajax({
