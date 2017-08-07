@@ -188,7 +188,43 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
             setValue(level.addressField, '');
         });
     }
-
+    
+    personAddressWithHierarchy.container.find('.addNewAddressEntry').each(function (){
+    	var addressField = getAddressField($(this).prevAll('.level').last());
+    	
+    	
+    	$(this).click(function(e){
+    		e.preventDefault();
+    		var level = levelFor(addressField);
+        	var parentEntryId = level.index == 0 ? null : levels[level.index-1].lastSelectionId;
+        	var val = getValue(level.addressField);
+        	var searchString = searchStringUntil(level);
+    		$.ajax({
+    			url: '/' + OPENMRS_CONTEXT_PATH + '/module/addresshierarchy/ajax/addNewAddressHierarchyEntry.form',
+    			method: 'POST',
+    			dataType: 'json',
+    			data: {
+					entryName: val,
+					levelId: level.id,
+					parentEntryId: parentEntryId
+				},
+				success(data){
+					if (data.name != level.lastSelection) {
+                        clearLevelsAfter(addressField);
+                    }
+                    level.lastSelection = data.name;
+                    level.lastSelectionId = data.id;
+					if(level.nonHierarchical){
+						queryCache['nonHierarchical'][level.index].push(data);
+					}
+					else{
+						queryCache[searchString].push(data);
+					}
+				}
+    		});
+    	});
+    });
+    
     personAddressWithHierarchy.container.find('.level').each(function () {
 
         var addressField = getAddressField(this);
@@ -219,13 +255,15 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                         })
                         var results = _.map(matches, function (item) {
                             return {
-                                label: item.name
+                            	value: item.name,
+                                label: item.name,
+                                entryId: item.id
                             }
                         });
                         // include an empty option if they haven't typed anything, so that just tabbing through doesn't
                         // auto-select the first option
                         if (request.term == '') {
-                            results.unshift({ label: '' });
+                            results.unshift({ label: '', value: '', entryId: null });
                         }
                         response(results);
                     });
@@ -238,6 +276,7 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                         clearLevelsAfter(addressField);
                     }
                     level.lastSelection = ui.item.value;
+                    level.lastSelectionId = ui.item.entryId;
                 }
             }).blur(function(event) {
                 // To make this behave like a autocomplete, where we don't allow invalid values, we need to check for
@@ -245,9 +284,9 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                 // (The autocompletechange event does not fire if you enter invalid values into it twice in a row, and
                 // it fires unwantedly when we go to the next screen, so we need to use a plain event on the text field
                 // for this.)
-                var legalValues = element.data('legalValues');
+            	var legalValues = element.data('legalValues');
                 if (element.val() && !((legalValues && legalValues.length > 0) && _.contains(legalValues, element.val()))) {
-                    element.val('');
+					clearLevelsAfter(addressField);
                     setTimeout(function () {
                         element.focus();
                     });
