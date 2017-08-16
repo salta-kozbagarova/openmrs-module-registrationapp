@@ -210,12 +210,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- <dependency>
+        <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>registrationcore-api</artifactId>
             <version>${registrationcoreVersion}</version>
             <scope>provided</scope>
-        </dependency> -->
+        </dependency>
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
@@ -287,11 +287,7 @@
         <!-- End OpenMRS modules -->
 
         <!-- start other dependencies -->
-        <dependency>
-		    <groupId>org.openmrs.module</groupId>
-			<artifactId>registrationcore-api</artifactId>
-			<version>1.7.2-SNAPSHOT</version>
-		</dependency>
+
         <!-- end other dependencies -->
 
     </dependencies>
@@ -359,10 +355,6 @@
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
 			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
-		</repository>
-	    <repository>
-			<id>salta-kozbagarova-openmrs-module-registrationcore</id>
-			<url>https://github.com/salta-kozbagarova/openmrs-module-registrationcore/raw/master</url>
 		</repository>
 	</repositories>
 
