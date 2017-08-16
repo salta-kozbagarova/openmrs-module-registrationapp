@@ -11,15 +11,18 @@
     ui.includeJavascript("uicommons", "navigator/navigatorTemplates.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
     ui.includeJavascript("registrationapp", "registerPatient.js");
-    ui.includeJavascript("registrationapp", "registerPatientValidator.js");
     ui.includeCss("registrationapp","registerPatient.css")
+
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
+
     Calendar cal = Calendar.getInstance()
     def maxAgeYear = cal.get(Calendar.YEAR)
     def minAgeYear = maxAgeYear - 120
     def minRegistrationAgeYear= maxAgeYear - 15 // do not allow backlog registrations older than 15 years
+
     def breadcrumbMiddle = breadcrumbOverride ?: '';
+
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
     def identifierSectionFound = false
 %>
@@ -37,46 +40,56 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 #similarPatientsSelect .container {
     overflow: hidden;
 }
+
 #similarPatientsSelect .container div {
     margin: 5px 10px;
 }
+
 #similarPatientsSelect .container .name {
     font-size: 25px;
     display: inline-block;
 }
+
 #similarPatientsSelect .container .info {
     font-size: 15px;
     display: inline-block;
 }
+
 #similarPatientsSelect .container .identifiers {
     font-size: 15px;
     display:inline-block;
     min-width: 600px;
 }
+
 #similarPatientsSelect .container .identifiers .idName {
     font-size: 15px;
     font-weight: bold;
 }
+
 #similarPatientsSelect .container .identifiers .idValue {
     font-size: 15px;
     margin: 0 20px 0 0;
 }
 </style>
 <script type="text/javascript">
+
     var breadcrumbs = _.compact(_.flatten([
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         ${ breadcrumbMiddle },
         { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
     ]));
+
     var testFormStructure = "${formStructure}";
     var patientDashboardLink = '${patientDashboardLink}';
     var appId = '${ui.escapeJs(appId)}';
+
     // hack to create the sections variable used by the unknown patient handler in registerPatient.js
     var sections =  [];
     <% formStructure.sections.each { structure ->
             def section = structure.value;  %>
             sections.push('${section.id}');
     <% } %>
+
 </script>
 
 <div id="validation-errors" class="note-container" style="display: none" >
@@ -278,9 +291,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                 if (field.type == 'personAttribute') {
                                     configOptions.uuid = field.uuid
                                 }
+
                                 if (field.type == 'personAddress') {
                                     configOptions.addressTemplate = addressTemplate
                                 }
+
                                 if (field.type == 'personRelationships') {
                                     configOptions.relationshipTypes = relationshipTypes
                                 }
