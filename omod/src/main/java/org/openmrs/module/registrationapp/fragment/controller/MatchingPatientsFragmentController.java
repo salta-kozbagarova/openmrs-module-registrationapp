@@ -87,6 +87,13 @@ public class MatchingPatientsFragmentController {
         List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
         return getSimpleObjects(app, ui, matches);
     }
+    
+    public Boolean isIinUnique(@RequestParam("appId") AppDescriptor app,
+									            @SpringBean("registrationCoreService") RegistrationCoreService service,
+									            @RequestParam(value="iin", required = true) String iin,
+									            HttpServletRequest request, UiUtils ui) throws Exception {
+    	return service.isIINUnique(iin);
+	}
 
     private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address, HttpServletRequest request) throws IOException {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
