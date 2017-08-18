@@ -1,16 +1,18 @@
 jq = jQuery;
 
 jq(function() {
-	$('input[name="IIN"]').keypress(function(e){
+	$('input[name="IIN"]').keyup(function(e){
 		if (e.which == 13) {
 			e.preventDefault();
 		}
 		var iin = $(this).val();
-		var fieldError = $(this).nextAll('.field-error').first();
+		var fieldError = $(this).nextAll('.field-error').first()[0];
 		if(iin.match(/^\d{12}$/) === null){
+			$(fieldError).css('display','block');
 			fieldError.innerText = '${ ui.message("registrationapp.patient.iin.validation.incorrectIin") }';
 		} else {
 			fieldError.innerText = '';
+			$(fieldError).css('display','none');
 			isIINUnique(iin);
 		}
 	});

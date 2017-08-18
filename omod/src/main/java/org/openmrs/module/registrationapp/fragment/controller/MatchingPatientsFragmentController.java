@@ -92,7 +92,7 @@ public class MatchingPatientsFragmentController {
 									            @SpringBean("registrationCoreService") RegistrationCoreService service,
 									            @RequestParam(value="iin", required = true) String iin,
 									            HttpServletRequest request, UiUtils ui) throws Exception {
-    	return false;//service.isIINUnique(iin);
+    	return service.isIINUnique(iin);
 	}
 
     private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address, HttpServletRequest request) throws IOException {
