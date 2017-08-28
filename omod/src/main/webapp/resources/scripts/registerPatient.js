@@ -18,7 +18,20 @@ function importMpiPatient(id) {
 }
 
 jq(function() {
+	
     NavigatorController = new KeyboardController();
+    
+    /*
+	 * @author Saltanat Alikhanova
+	 * since the 'section' tags were removed from the registerPatient gsp page, navigator has stopped working
+	 * properly as it looks at the 'section' tag. And the confirmation submit button got disabled. Here's some
+	 * hack that fixes it
+	 */
+	if (typeof(NavigatorController) != 'undefined') {
+		var field = NavigatorController.getFieldById("submit");
+		field.enable();
+		jq('#submit').val(jq('#confirmation_label').text());
+	}
 
     /* Similar patient functionality */
     reviewSimilarPatients = emr.setupConfirmationDialog({
@@ -151,6 +164,9 @@ jq(function() {
     /* Submit functionality */
     jq('#registration').submit(function (e) {
         e.preventDefault();
+        if(!validateForm()){
+        	return false;
+        }
         jq('#submit').attr('disabled', 'disabled');
         jq('#cancelSubmission').attr('disabled', 'disabled');
         jq('#validation-errors').hide();

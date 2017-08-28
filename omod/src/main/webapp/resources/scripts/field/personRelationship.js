@@ -34,12 +34,18 @@ angular.module('personRelationships', ['personService', 'ui.bootstrap'])
         // specifically, we override the "displayValue" function on the relationship_type field within the navigator so that:
         // 1) the checkmark in the left-hand navigation of the is properly rendered when data is filled out
         // 2) the confirmation screen at the end of the workflow properly displays the relationships that have been entered
-        if (typeof(NavigatorController) != 'undefined') {
+        /*if (typeof(NavigatorController) != 'undefined') {
             var field = NavigatorController.getFieldById("relationship_type");
             field.displayValue = function() {
                 return $scope.relationships.map(function(r) {
                     return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
                 }).join(', ');
             }
+        }*/
+        var field = jq("#relationship_type");
+        field.displayValue = function() {
+            return $scope.relationships.map(function(r) {
+                return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
+            }).join(', ');
         }
     }]);

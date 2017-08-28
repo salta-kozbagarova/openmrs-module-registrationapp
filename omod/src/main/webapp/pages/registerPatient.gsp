@@ -29,6 +29,7 @@
 %>
 
 <!-- used within registerPatient.js -->
+<%= ui.includeFragment("registrationapp", "validationMessages") %>
 <%= ui.includeFragment("appui", "messages", [ codes: [
         'emr.gender.M',
         'emr.gender.F'
@@ -137,7 +138,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     <form class="simple-form-ui" id="registration" method="POST">
 
         <% if (includeRegistrationDateSection) { %>
-        <section id="registration-info" class="non-collapsible">
+        <div id="registration-info" class="non-collapsible">
             <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
 
             <fieldset id="registration-date" class="multiple-input-date no-future-date">
@@ -160,7 +161,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         maxYear: maxAgeYear,
                 ])}
             </fieldset>
-        </section>
+        </div>
         <% } %>
 
         <!-- read configurable sections from the json config file-->
@@ -168,7 +169,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             def section = structure.value
             def questions = section.questions
         %>
-            <section id="${section.id}" class="non-collapsible">
+            <div id="${section.id}" class="non-collapsible">
                 <span id="${section.id}_label" class="title">${section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)}</span>
 
                     <!-- hardcoded name, gender, and birthdate are added for the demographics section -->
@@ -305,17 +306,17 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             <% } %>
                         </fieldset>
                     <% } %>
-            </section>
+            </div>
         <% } %>
 
         <% if (allowManualIdentifier && !identifierSectionFound) { %>
-            <section id="patient-identification-section" class="non-collapsible">
+            <div id="patient-identification-section" class="non-collapsible">
                 <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
 
                 ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
                         identifierTypeName: ui.format(primaryIdentifierType)
                 ])}
-            </section>
+            </div>
         <% } %>
 
         <div id="confirmation">
