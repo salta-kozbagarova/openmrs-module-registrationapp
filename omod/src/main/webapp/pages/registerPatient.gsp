@@ -139,10 +139,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
         <% if (includeRegistrationDateSection) { %>
         <div id="registration-info" class="non-collapsible">
-            <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
 
             <fieldset id="registration-date" class="multiple-input-date no-future-date">
-                <legend id="registrationDateLabel">${ui.message("registrationapp.registrationDate.label")}</legend>
                 <h3>${ui.message("registrationapp.registrationDate.question")}</h3>
 
                 <p>
@@ -170,14 +168,12 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             def questions = section.questions
         %>
             <div id="${section.id}" class="non-collapsible">
-                <span id="${section.id}_label" class="title">${section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)}</span>
 
                     <!-- hardcoded name, gender, and birthdate are added for the demographics section -->
                     <% if (section.id == 'demographics') { %>
 
                         <fieldset id="demographics-name">
 
-                            <legend>${ui.message("registrationapp.patient.name.label")}</legend>
                             <div>
                                 <h3>${ui.message("registrationapp.patient.name.question")}</h3>
 
@@ -220,7 +216,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         </fieldset>
 
                         <fieldset id="demographics-gender">
-                            <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
                             <h3>${ui.message("registrationapp.patient.gender.question")}</h3>
                             ${ ui.includeFragment("uicommons", "field/dropDown", [
                                     id: "gender",
@@ -236,7 +231,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         </fieldset>
 
                         <fieldset id="demographics-birthdate" class="multiple-input-date date-required no-future-date">
-                            <legend id="birthdateLabel">${ui.message("registrationapp.patient.birthdate.label")}</legend>
                             <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                             ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
                                     label: "",
@@ -276,7 +270,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                 <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
                                 <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
                         >
-                            <legend>${ ui.message(question.legend)}</legend>
                             <% if(question.legend == "Person.address"){ %>
                                 ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
                             <% } %>
@@ -311,7 +304,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
         <% if (allowManualIdentifier && !identifierSectionFound) { %>
             <div id="patient-identification-section" class="non-collapsible">
-                <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
 
                 ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
                         identifierTypeName: ui.format(primaryIdentifierType)
