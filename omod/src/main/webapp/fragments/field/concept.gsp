@@ -1,44 +1,27 @@
 <%
+	import groovy.json.*
     config.require("formFieldName")
     config.require("conceptId")
+    
+    def maxResults = config.maxResults ? config.maxResults : 20;
+    def conceptAnswers = new JsonBuilder(conceptAnswers);
 %>
 
 <script type="text/javascript">
     jq(function() {
-        var xhr=null;//used to track active ajax requests
-        
+    var consAnswers = ${conceptAnswers};
         jq('#${ config.id }-field').autocomplete({
-            source: function(request, response) {
-                var ajaxUrl = '${ ui.actionLink("registrationapp", "concept", "getConcepts")}';
-                if(xhr){
-                    xhr.abort();
-                    xhr = null;
-                }
-                xhr= jq.ajax({
-                    url: ajaxUrl,
-                    dataType: 'json',
-                    data: { term: request.term, conceptId: ${config.conceptId}, maxResults: ${config.maxResults} ? ${config.maxResults} : 20 },
-                    success: function (data) {
-                        if (data.length == 0){
-                            data.push({
-                               value: 0,
-                               label: '${ ui.message("registrationapp.concept.notFound") }'
-                            });
-                        }
-                        
-                        response(data);
-                    }
-                }).complete(function(){
-                     xhr = null;
-                }).error(function(){
-                     xhr = null;
-                     console.log("error on searching for concepts");
-                });
+            source: function(request, response){
+            	var respData = jq.grep(consAnswers, function(elem){
+					return elem.value.match(new RegExp(request.term, 'i')) != null;
+				});
+				respData = respData.slice(0,${maxResults});
+				response(respData);
             },
             autoFocus: false,
             minLength: 1,
             delay: 300
-        });
+        }); 
     });
 </script>
 
