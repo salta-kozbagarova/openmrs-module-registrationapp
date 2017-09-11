@@ -10,26 +10,21 @@
     }
 %>
 
-<p <% if (config.left) { %> class="left" <% } %> >
+<div class="form-group row">
+	<label for="${ config.formFieldName }" class="form-group col-md-4">${config.label}</label>
+		<div class="form-group col-md-8">
 
-    <label for="${ config.id }-field">
-        ${ config.label } <% if (config.classes && config.classes.contains("required")) { %><span>(${ ui.message("emr.formValidation.messages.requiredField.label") })</span><% } %>
-    </label>
-
-    <input type="text" id="${ config.id }-field" name="${ config.formFieldName }" value="${ config.initialValue ?: '' }"
-           <% if (config.classes) { %>class="${ config.classes.join(' ') }" <% } %> />
-
-    ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: config.formFieldName ]) }
-    <% if (config.optional) { %>
-    ${ ui.message("emr.optional") }
-    <% } %>
-</p>
+			<input type="text" class="form-control form-control-sm" id="${ config.formFieldName }" name="${ config.formFieldName }" placeholder="${config.label}"
+				value="${config.initialValue?: ''}">
+			<div class="invalid-feedback d-none"></div>
+		</div>
+</div>
 
 <% if (!config.ignoreCheckForSimilarNames) { %>
 <script type="text/javascript">
 
     jq(function() {
-        jq("#${ config.id }-field" ).autocomplete({
+        jq("#${ config.formFieldName }").autocomplete({
             source: function( request, response ) {
                 jq.ajax({
                     url: "${ ui.actionLink("registrationapp", "personName", "getSimilarNames") }",

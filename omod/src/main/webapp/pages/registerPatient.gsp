@@ -3,33 +3,40 @@
         throw new IllegalStateException("Logged-in user is not a Provider")
     }
     ui.decorateWith("appui", "standardEmrPage")
-    ui.includeJavascript("uicommons", "handlebars/handlebars.min.js", Integer.MAX_VALUE - 1);
+    /*ui.includeJavascript("uicommons", "handlebars/handlebars.min.js", Integer.MAX_VALUE - 1);
     ui.includeJavascript("uicommons", "navigator/validators.js", Integer.MAX_VALUE - 19)
     ui.includeJavascript("uicommons", "navigator/navigator.js", Integer.MAX_VALUE - 20)
     ui.includeJavascript("uicommons", "navigator/navigatorHandlers.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/navigatorTemplates.js", Integer.MAX_VALUE - 21)
-    ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
+    ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);*/
+	ui.includeJavascript("uicommons", "emr.js");
     ui.includeJavascript("registrationapp", "registerPatient.js");
     ui.includeJavascript("registrationapp", "registerPatientValidator.js");
     ui.includeCss("registrationapp","registerPatient.css")
 
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
-
-    Calendar cal = Calendar.getInstance()
+	
+	Calendar cal = Calendar.getInstance()
     def maxAgeYear = cal.get(Calendar.YEAR)
     def minAgeYear = maxAgeYear - 120
     def minRegistrationAgeYear= maxAgeYear - 15 // do not allow backlog registrations older than 15 years
+    
+    Calendar maxBirthDate = Calendar.getInstance()
+    Calendar minBirthDate = Calendar.getInstance()
+    minBirthDate.set(year:(maxBirthDate[Calendar.YEAR] - 120), month:(maxBirthDate[Calendar.MONTH]), date:maxBirthDate[Calendar.DATE])
 
     def breadcrumbMiddle = breadcrumbOverride ?: '';
 
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
     def identifierSectionFound = false
 %>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 
 <!-- used within registerPatient.js -->
 <%= ui.includeFragment("registrationapp", "validationMessages") %>
+<%= ui.includeFragment("registrationapp", "monthNames") %>
 <%= ui.includeFragment("appui", "messages", [ codes: [
         'emr.gender.M',
         'emr.gender.F'
@@ -102,7 +109,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     </div>
 </div>
 
-<div id="content" class="container">
+<div id="content" class="container-fluid">
     <h2>
         ${ ui.message("registrationapp.registration.label") }
     </h2>
@@ -135,7 +142,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         </ul>
     </div>
 
-    <form class="simple-form-ui" id="registration" method="POST">
+    <form id="registration" method="POST">
 
         <% if (includeRegistrationDateSection) { %>
         <div id="registration-info" class="non-collapsible">
@@ -161,174 +168,148 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </fieldset>
         </div>
         <% } %>
-
-        <!-- read configurable sections from the json config file-->
-        <% formStructure.sections.each { structure ->
-            def section = structure.value
-            def questions = section.questions
-        %>
-            <div id="${section.id}" class="non-collapsible">
-
-                    <!-- hardcoded name, gender, and birthdate are added for the demographics section -->
-                    <% if (section.id == 'demographics') { %>
-
-                        <fieldset id="demographics-name">
-
-                            <div>
-                                <h3>${ui.message("registrationapp.patient.name.question")}</h3>
-
-                                <% nameTemplate.lines.each { line ->
-                                    // go through each line in the template and find the first name token; assumption is there is only one name token per line
-                                    def name = line.find({it['isToken'] == 'IS_NAME_TOKEN'})['codeName'];
-                                    def initialNameFieldValue = ""
-                                    if(patient.personName && patient.personName[name]){
-                                        initialNameFieldValue = patient.personName[name]
-                                    }
-                                %>
-                                ${ ui.includeFragment("registrationapp", "field/personName", [
-                                        label: ui.message(nameTemplate.nameMappings[name]),
-                                        size: nameTemplate.sizeMappings[name],
-                                        formFieldName: name,
-                                        dataItems: 4,
-                                        left: true,
-                                        initialValue: initialNameFieldValue,
-                                        classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
-                                ])}
-
-                                <% } %>
-                            </div>
-
-                            <% if (allowUnknownPatients) { %>
-
-                            <!-- TODO: fix this horrible method of making this line up properly -->
-                            <div style="display:inline-block">
-                                <!-- note that we are deliberately not including this in a p tag because we don't want the handler to pick it up as an actual field -->
-                                <nobr>
-                                    <input id="checkbox-unknown-patient" type="checkbox"/>
-                                    <label for="checkbox-unknown-patient">${ui.message("registrationapp.patient.demographics.unknown")}</label>
-                                </nobr>
-                            </div>
-
-                            <% } %>
-
-
-                            <input type="hidden" name="preferred" value="true"/>
-                        </fieldset>
-
-                        <fieldset id="demographics-gender">
-                            <h3>${ui.message("registrationapp.patient.gender.question")}</h3>
-                            ${ ui.includeFragment("uicommons", "field/dropDown", [
-                                    id: "gender",
-                                    formFieldName: "gender",
-                                    options: genderOptions,
-                                    classes: ["required"],
-                                    initialValue: patient.gender,
-                                    hideEmptyLabel: true,
-                                    expanded: true
-                            ])}
-                            <!-- we "hide" the unknown flag here since gender is the only field not hidden for an unknown patient -->
-                            <input id="demographics-unknown" type="hidden" name="unknown" value="false"/>
-                        </fieldset>
-
-                        <fieldset id="demographics-birthdate" class="multiple-input-date date-required no-future-date">
-                            <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
-                            ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
-                                    label: "",
-                                    formFieldName: "birthdate",
-                                    left: true,
-                                    showEstimated: true,
-                                    estimated: patient.birthdateEstimated,
-                                    initialValue: patient.birthdate,
-                                    minYear: minAgeYear,
-                                    maxYear: maxAgeYear
-                            ])}
-                        </fieldset>
-                    <% } %>
-
-                    <!-- allow customization of additional question in the patient identification section, if it is included -->
-                    <% if (section.id == 'patient-identification-section') {
-                        identifierSectionFound = true; %>
-                        <% if (allowManualIdentifier) { %>
-                            ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
-                                    identifierTypeName: ui.format(primaryIdentifierType)
-                            ])}
-                        <% } %>
-                    <% } %>
-
-                    <% questions.each { question ->
-                        def fields=question.fields
-                        def classes;
-                        if (question.legend == "Person.address") {
-                            classes = "requireOne"
-                        }
-                        if (question.cssClasses) {
-                            classes = classes + (classes ? ' ' : '') + question.cssClasses.join(" ")
-                        }
-                    %>
-                        <fieldset id="${question.id}"
-                                <% if (classes) { %> class="${classes}" <% } %>
-                                <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
-                                <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
-                        >
-                            <% if(question.legend == "Person.address"){ %>
-                                ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
-                            <% } %>
-                            <% if(question.header) { %>
-                                    <h3>${ui.message(question.header)}</h3>
-                            <% } %>
-
-                            <% fields.each { field ->
-                                def configOptions = (field.fragmentRequest.configuration != null) ? field.fragmentRequest.configuration : [:] ;
-                                configOptions.label = ui.message(field.label)
-                                configOptions.formFieldName = field.formFieldName
-                                configOptions.left = true
-                                configOptions.classes = field.cssClasses
-                                if (field.type == 'personAttribute') {
-                                    configOptions.uuid = field.uuid
-                                }
-
-                                if (field.type == 'personAddress') {
-                                    configOptions.addressTemplate = addressTemplate
-                                }
-
-                                if (field.type == 'personRelationships') {
-                                    configOptions.relationshipTypes = relationshipTypes
-                                }
-                            %>
-                                ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
-                            <% } %>
-                        </fieldset>
-                    <% } %>
+		
+		<div class="row mt-2 pt-2">
+              <div class="form-check col-md-6">
+                    <input id="checkbox-unknown-patient" type="checkbox" class="form-check-input"/>
+                    <label for="checkbox-unknown-patient">unknown</label>
             </div>
-        <% } %>
+          </div>
+		  
+	<!-- read configurable sections from the json config file-->
+	<% formStructure.sections.each { structure ->
+		def section = structure.value
+		def questions = section.questions
+	%>
+		
+	<div class="card mt-2">
+		<div class="card-header">
+		${ui.message(section.label)}
+		</div>
+		<div class="card-body">
+			<div class="row">
+				
+				<% if (section.id == 'demographics') { %>
+				   <div class="col-md-6">
+				   
+					   <% nameTemplate.lines.each { line ->
+			                // go through each line in the template and find the first name token; assumption is there is only one name token per line
+			                def name = line.find({it['isToken'] == 'IS_NAME_TOKEN'})['codeName'];
+			                def initialNameFieldValue = ""
+			                if(patient.personName && patient.personName[name]){
+			                    initialNameFieldValue = patient.personName[name]
+			                }
+			            %>
+		                    ${ ui.includeFragment("registrationapp", "field/personName", [
+		                            label: ui.message(nameTemplate.nameMappings[name]),
+		                            size: nameTemplate.sizeMappings[name],
+		                            formFieldName: name,
+		                            dataItems: 4,
+		                            left: true,
+		                            initialValue: initialNameFieldValue,
+		                            classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
+		                    ])}
+	
+	                    <% } %>
+					   <input type="hidden" name="preferred" value="true"/>
+				   </div>
+				   <div class="col-md-6">
+						   
+						${ ui.includeFragment("registrationapp", "field/dropDown", [
+                                id: "gender",
+                                label: ui.message("registrationapp.patient.gender.chooseAGender"),
+                                formFieldName: "gender",
+                                options: genderOptions,
+                                classes: ["required"],
+                                initialValue: patient.gender,
+                                hideEmptyLabel: false,
+                                emptyOptionLabel: ui.message("registrationapp.patient.gender.chooseAGender")
+                        ])}
+							   
+						${ ui.includeFragment("registrationapp", "field/multipleInputDate", [
+								id: "birthdate",
+                                label: ui.message("registrationapp.patient.birthdate.label"),
+                                formFieldName: "birthdate",
+                                left: true,
+                                showEstimated: true,
+                                estimated: patient.birthdateEstimated,
+                                initialValue: patient.birthdate,
+                                minDate: minBirthDate.time,
+                                maxDate: maxBirthDate.time
+                        ])}
+							   
+				   </div>
+			   <% } %>
+			   
+			   <div class="col-md-6">
+			   
+			   <%
+			   		def questionsSize
+			   		def questionBlockSize = 0;
+			   		def i = 0;
+			   		if(questions != null){
+			   			questionsSize = questions.size()
+				   		if(questionsSize % 2 == 1){
+				   			questionBlockSize = (questionsSize - 1)/2 + 1
+				   		} else{
+				   			questionBlockSize = questionsSize/2
+				   		}
+			   		}
+			   %>
+			   <% questions.each { question ->
+	                def fields=question.fields
+	                def classes;
+	                i++;
+	                if (question.legend == "Person.address") {
+	                    classes = "requireOne"
+	                }
+	                if (question.cssClasses) {
+	                    classes = classes + (classes ? ' ' : '') + question.cssClasses.join(" ") + " col-md-4"
+	                }
+	            %>
+	            
+		            <% fields.each { field ->
+	                    def configOptions = (field.fragmentRequest.configuration != null) ? field.fragmentRequest.configuration : [:] ;
+	                    configOptions.label = ui.message(field.label)
+	                    configOptions.formFieldName = field.formFieldName
+	                    configOptions.left = true
+	                    configOptions.classes = field.cssClasses
+	                    if (field.type == 'personAttribute') {
+	                        configOptions.uuid = field.uuid
+	                    }
+	
+	                    if (field.type == 'personAddress') {
+	                        configOptions.addressTemplate = addressTemplate
+	                    }
+	
+	                    if (field.type == 'personRelationships') {
+	                        configOptions.relationshipTypes = relationshipTypes
+	                    }
+	                %>
+	                
+		                ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
+			            
+			            <% if (i == questionBlockSize) { %>
+			            	</div>
+			            	<div class="col-md-6">
+			            <% } %>
+	                <% } %>
+	            
+	            <% } %>
+	            </div>
+			</div>
+		</div>
+	</div>
+	<% } %>
+		
+	<div class="row justify-content-center">
+		<div class="form-group row">
+			<div id="confirmation" class="col">
+				<button id="cancelRegistration" class="btn btn-danger" style="background: #dc3545;" type="button">Cancel</button>
+				<button id="submitRegistration" type="submit" class="btn btn-success" style="background: #28a745;">Confirm</button>
+			</div>
+		</div>
+	</div>
 
-        <% if (allowManualIdentifier && !identifierSectionFound) { %>
-            <div id="patient-identification-section" class="non-collapsible">
-
-                ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
-                        identifierTypeName: ui.format(primaryIdentifierType)
-                ])}
-            </div>
-        <% } %>
-
-        <div id="confirmation">
-            <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
-            <div class="before-dataCanvas"></div>
-            <div id="dataCanvas"></div>
-            <div class="after-data-canvas"></div>
-            <div id="exact-matches" style="display: none; margin-bottom: 20px">
-                <span class="field-error">${ui.message("registrationapp.exactPatientFound")}</span>
-                <ul id="exactPatientsSelect" class="select"></ul>
-            </div>
-            <div id="confirmationQuestion">
-                ${ ui.message("registrationapp.confirm") }
-                <p style="display: inline">
-                    <input id="submit" type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
-                </p>
-                <p style="display: inline">
-                    <input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" />
-                </p>
-            </div>
-        </div>
     </form>
 </div>

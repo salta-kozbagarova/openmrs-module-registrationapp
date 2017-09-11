@@ -190,7 +190,7 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
     }
     
     personAddressWithHierarchy.container.find('.addNewAddressEntry').each(function (){
-    	var addressField = getAddressField($(this).prevAll('.level').last());
+    	var addressField = getAddressField($(this).parent().prev().find('.level'));
     	
     	
     	$(this).click(function(e){
@@ -303,12 +303,12 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                 }
             }).focus(function () {
                 $(this).select(); // selecting the entire field on focus makes this feel more like an autocomplete
-                $(this).data("autocomplete").search($(this).val());
+                $(this).autocomplete("search");
             });
         }
     });
 
-    personAddressWithHierarchy.container.find(".address-hierarchy-shortcut").autocomplete({
+    /*personAddressWithHierarchy.container.find(".address-hierarchy-shortcut").autocomplete({
         autoFocus: true,
         source: function (request, response) {
             if (request.term.length < 3) {
@@ -359,5 +359,5 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
         change: function (event, ui) {
             personAddressWithHierarchy.container.find(".address-hierarchy-shortcut").val('');
         }
-    });
+    });*/
 }

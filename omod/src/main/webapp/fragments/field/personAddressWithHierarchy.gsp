@@ -11,18 +11,10 @@
         return it;
     }
 %>
+
 <div id="${ config.id }-container">
 
-    <% if (config.shortcutFor) {
-        def shortcutDisplay = ui.message(addressTemplate.nameMappings[config.shortcutFor])
-    %>
-        <p>
-            <label><em>${ ui.message('registrationapp.addressHierarchyWidget.shortcut', shortcutDisplay) }</em></label>
-            <input type="text" class="address-hierarchy-shortcut" size="60" placeholder="${ ui.message('registrationapp.addressHierarchyWidget.shortcut.instructions',ui.escapeAttribute(shortcutDisplay))}"/>
-        </p>
-    <% } %>
-
-    <% levels.each { level ->
+	<% levels.each { level ->
         def classes = [ "level" ]
         if (parseAsBoolean(config.required) && level.required) {
             classes.add("required")
@@ -34,13 +26,21 @@
             levelInitial = initialValue[level.addressField.name] ?: ""
         }
     %>
-        <p>
-            <label>${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
-            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ config.fieldMappings?.get(level.addressField.name) ?: level.addressField.name }" id="${ config.id }-${ level.addressField.name }" value="${ ui.escapeAttribute(levelInitial) }"/>
-            ${ ui.includeFragment("uicommons", "fieldErrors", [fieldName: level.addressField.name]) }
-            <button class="addNewAddressEntry">${ui.message("registrationapp.addressHierarchyWidget.add")}</button>
-        </p>
+    
+		<div class="form-group row">
+			<label for="${ config.id }-${ level.addressField.name }" class="form-group col-md-4">${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
+			<div class="form-group col-md-4">
+				<input type="text" class="form-control form-control-sm ${ classes.join(" ") }" id="${ config.id }-${ level.addressField.name }" 
+							name="${ level.addressField.name }" 
+							placeholder="${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }" 
+							value="${ ui.escapeAttribute(levelInitial) }">
+			</div>
+			<div class="form-group col-md-4">
+				<button class="btn btn-success btn-sm addNewAddressEntry" style="background: #28a745;">${ui.message("registrationapp.addressHierarchyWidget.add")}</button>
+			</div>
+		</div>
     <% } %>
+
 </div>
 
 <script type="text/javascript">

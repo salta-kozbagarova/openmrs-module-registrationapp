@@ -3,7 +3,7 @@ jq = jQuery;
 // TODO refactor this all into something cleaner
 
 // we expose this in the global scope so that other javascript widgets can access it--probably should have a better pattern for this
-var NavigatorController;
+//var NavigatorController;
 
 function importMpiPatient(id) {
     $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: id}))
@@ -19,7 +19,20 @@ function importMpiPatient(id) {
 
 jq(function() {
 	
-    NavigatorController = new KeyboardController();
+	//style fixes
+	fixStyles();
+	function fixStyles(){
+		var conatiners = jq('.container');
+		jq.each(conatiners, function(index){
+			if(jq(this).attr('id') == 'content'){
+				jq(this).removeClass('container');
+				jq(this).addClass('container-fluid');
+			}
+		});
+	}
+	
+	
+    //NavigatorController = new KeyboardController();
     
     /*
 	 * @author Saltanat Alikhanova
@@ -27,11 +40,11 @@ jq(function() {
 	 * properly as it looks at the 'section' tag. And the confirmation submit button got disabled. Here's some
 	 * hack that fixes it
 	 */
-	if (typeof(NavigatorController) != 'undefined') {
+	/*if (typeof(NavigatorController) != 'undefined') {
 		var field = NavigatorController.getFieldById("submit");
 		field.enable();
 		jq('#submit').val(jq('#confirmation_label').text());
-	}
+	}*/
 
     /* Similar patient functionality */
     reviewSimilarPatients = emr.setupConfirmationDialog({
@@ -167,9 +180,8 @@ jq(function() {
         if(!validateForm()){
         	return false;
         }
-        jq('#submit').attr('disabled', 'disabled');
-        jq('#cancelSubmission').attr('disabled', 'disabled');
-        jq('#validation-errors').hide();
+        jq('#submitRegistration').attr('disabled', 'disabled');
+        jq('#cancelRegistration').attr('disabled', 'disabled');
         var formData = jq('#registration').serialize();
         jq.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "submit", { appId: appId }), formData)
             .success(function (response) {
@@ -184,8 +196,8 @@ jq(function() {
     });
 
     /* Registration date functionality */
-    if (NavigatorController.getQuestionById('registration-date') != null) {  // if retro entry configured
-        _.each(NavigatorController.getQuestionById('registration-date').fields, function (field) {       // registration fields are is disabled by default
+    if (jq('registration-date') != null) {  // if retro entry configured
+        _.each(jq('registration-date').find("p").has("input, textarea, select, button"), function (field) {       // registration fields are is disabled by default
             if (field.id != 'checkbox-enable-registration-date') {
                 field.hide();
             }
@@ -193,14 +205,14 @@ jq(function() {
 
         jq('#checkbox-enable-registration-date').click(function () {
             if (jq('#checkbox-enable-registration-date').is(':checked')) {
-                _.each(NavigatorController.getQuestionById('registration-date').fields, function (field) {
+                _.each(jq('registration-date').find("p").has("input, textarea, select, button"), function (field) {
                     if (field.id != 'checkbox-enable-registration-date') {
                         field.hide();
                     }
                 });
             }
             else {
-                _.each(NavigatorController.getQuestionById('registration-date').fields, function (field) {
+                _.each(jq('registration-date').find("p").has("input, textarea, select, button"), function (field) {
                     if (field.id != 'checkbox-enable-registration-date') {
                         field.show();
                     }
@@ -210,16 +222,16 @@ jq(function() {
     }
 
     /* Manual patient identifier entry functionality */
-    if (NavigatorController.getFieldById('patient-identifier') != null) {   // if manual entry configured
-        NavigatorController.getFieldById('patient-identifier').hide();
+    if (jq('patient-identifier') != null) {   // if manual entry configured
+    	jq('patient-identifier').hide();
 
         jq('#checkbox-autogenerate-identifier').click(function () {
             if (jq('#checkbox-autogenerate-identifier').is(':checked')) {
-                NavigatorController.getFieldById('patient-identifier').hide();
+            	jq('patient-identifier').hide();
             }
             else {
-                NavigatorController.getFieldById('patient-identifier').show();
-                NavigatorController.getFieldById('patient-identifier').click();
+            	jq('patient-identifier').show();
+            	jq('patient-identifier').click();
             }
         })
     }
@@ -228,51 +240,53 @@ jq(function() {
     jq('#checkbox-unknown-patient').click(function () {
         if (jq('#checkbox-unknown-patient').is(':checked')) {
             // disable all questions & sections except gender and registration date
-            _.each(NavigatorController.getQuestionById('demographics-name').fields, function (field) {
-                if (field.id != 'checkbox-unknown-patient') {
-                    field.disable();
-                }
-            });
-
-            _.each(NavigatorController.getSectionById('demographics').questions, function(question) {
-                if (question.id != 'demographics-gender' && question.id != 'demographics-name') {
-                    question.disable();
-                }
-            })
-
-            // TODO sections variable is currently hackily defined in registerPatient.gsp
-            _.each(sections, function(section) {
-                if (section != 'demographics') {
-                    NavigatorController.getSectionById(section).disable();
+        	jq.each(jq('#registration').find("input, textarea, select"), function (index) {
+                if (jq(this).attr('id') != 'checkbox-unknown-patient' && jq(this).attr('id') != 'gender') {
+                	disable(jq(this));
                 }
             });
 
             // set unknown flag
             jq('#demographics-unknown').val('true');
-
-            // jump ahead to gender
-            NavigatorController.getQuestionById('demographics-gender').click();
         }
         else {
-            // re-enable all functionality
-            // hide all questions & sections except gender and registration date
-            _.each(NavigatorController.getQuestionById('demographics-name').fields, function (field) {
-                if (field.id != 'checkbox-unknown-patient') {
-                    field.enable();
+        	jq.each(jq('#registration').find("input, textarea, select"), function (index) {
+                if (jq(this).attr('id') != 'checkbox-unknown-patient' && jq(this).attr('id') != 'gender') {
+                    enable(jq(this));
                 }
-            });
-
-            NavigatorController.getQuestionById('demographics-birthdate').enable();
-
-            // TODO sections variable is currently hackily defined in registerPatient.gsp
-            _.each(sections, function(section) {
-                NavigatorController.getSectionById(section).enable();
             });
 
             // unset unknown flag
             jq('#demographics-unknown').val('false');
-            NavigatorController.getQuestionById('demographics-name').fields[0].click();
+            jq('#givenName').focus();
         }
     });
 });
 
+
+function disable(elem){
+	elem.attr('disabled', 'true');
+	elem.addClass("disabled");
+    
+    var selectedOption = jq(elem).find('option:selected');
+    if (selectedOption.length > 0) {
+        selectedOption.removeAttr('selected');
+    }
+    // handle the case of radio set with a checked item
+    else if (elem.attr('type') == 'radio' && elem.is(':checked')) {
+    	elem.removeAttr('checked');
+    }
+    // handle checkbox
+    else if (elem.attr('type') == 'checkbox') {
+    	elem.removeAttr('checked');
+    }
+    // handle input field
+    else {
+    	elem.val("");
+    }
+}
+
+function enable(elem){
+	elem.removeAttr('disabled');
+	elem.removeClass("disabled");
+}

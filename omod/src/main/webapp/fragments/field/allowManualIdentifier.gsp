@@ -1,7 +1,7 @@
 <%
     config.require("identifierTypeName")
 %>
-<fieldset id="patient-identifier-question">
+<div id="patient-identifier-question">
     <legend id="patientIdentifierLabel">${config.identifierTypeName}</legend>
     <h3>${ui.message("registrationapp.patient.identifier.question", config.identifierTypeName)}</h3>
 
@@ -14,4 +14,4 @@
         <label for="patient-identifier">${ui.message("registrationapp.patient.identifier.label")}</label>
         <input id="patient-identifier" name="patientIdentifier"/>
     </p>
-</fieldset>
+</div>

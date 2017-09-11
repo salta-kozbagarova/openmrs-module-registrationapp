@@ -2,12 +2,12 @@ jq = jQuery;
 
 jq(function() {
 	var residenceCountry = 'Казахстан';
-
+	
 	$.fn.validate = function(){
 	    $(this).trigger('blur');   
 	};
 	
-	$('input[name="IIN"]').data('validated-field',true);
+	$('input[name="IIN"]').attr('data-validated-field',true);
 	$('input[name="IIN"]').keyup(function(e){
 		if (e.which == 13) {
 			e.preventDefault();
@@ -18,70 +18,91 @@ jq(function() {
 		checkIinIsValid();
 	});
 	
-	$('input[name="givenName"]').data('validated-field',true);
+	$('input[name="givenName"]').attr('data-validated-field',true);
 	$('input[name="givenName"]').keyup(function(e){
 		if (e.which == 13) {
 			e.preventDefault();
 		}
 		var givenName = $(this).val();
-		var fieldError = $(this).nextAll('.field-error').first()[0];
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
 		if(!givenName.trim() || givenName.trim() == ''){
-			$(fieldError).css('display','block');
-			fieldError.innerText = message;
-			$(this).addClass('registration-form-error');
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
 		}
 	})
 	.blur(function(){
 		var givenName = $(this).val();
-		var fieldError = $(this).nextAll('.field-error').first()[0];
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
 		if(!givenName.trim() || givenName.trim() == ''){
-			$(fieldError).css('display','block');
-			fieldError.innerText = message;
-			$(this).addClass('registration-form-error');
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
 		}
 	});
 	
-	$('input[name="familyName"]').data('validated-field',true);
+	$('input[name="familyName"]').attr('data-validated-field',true);
 	$('input[name="familyName"]').keyup(function(e){
 		if (e.which == 13) {
 			e.preventDefault();
 		}
 		var familyName = $(this).val();
-		var fieldError = $(this).nextAll('.field-error').first()[0];
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
 		if(!familyName.trim() || familyName.trim() == ''){
-			$(fieldError).css('display','block');
-			fieldError.innerText = message;
-			$(this).addClass('registration-form-error');
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
 		}
 	})
 	.blur(function(){
 		var familyName = $(this).val();
-		var fieldError = $(this).nextAll('.field-error').first()[0];
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
 		if(!familyName.trim() || familyName.trim() == ''){
-			$(fieldError).css('display','block');
-			fieldError.innerText = message;
-			$(this).addClass('registration-form-error');
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
 		}
 	});
 	
 	checkIinIsRequired = function(){
 		var iinField = $('input[name="IIN"]');
 		var iin = $(iinField).val();
-		var fieldError = $(iinField).nextAll('.field-error').first()[0];
+		var fieldError = $(iinField).nextAll('.invalid-feedback').first()[0];
 		if(!iin.trim()){
 			var citizenship = $('input[name="citizenship"]').val();
-			var estimatedMonths = $('#birthdateMonths-field').val();
+			/*var estimatedMonths = $('#birthdateMonths-field').val();
 			var estimatedYears = $('#birthdateYears-field').val();
 			var birthDay = $('#birthdateDay-field').val();
 			var birthMonth = $('#birthdateMonth-field').val();
-			var birthYear = $('#birthdateYear-field').val();
+			var birthYear = $('#birthdateYear-field').val();*/
 			
-			var months = estimatedYears ? (estimatedYears*12 + (estimatedMonths ? estimatedMonths : 0)) : getMonths(birthYear, birthMonth, birthDay);
+			//var months = estimatedYears ? (estimatedYears*12 + (estimatedMonths ? estimatedMonths : 0)) : getMonths(birthYear, birthMonth, birthDay);
+			var months = getMonths($('#birthdateDay').val(), $('#birthdateMonth').val(), $('#birthdateYear').val());
 			
 			if(citizenship.trim() == residenceCountry && months >= 3){
-				$(fieldError).css('display','block');
+				$(fieldError).removeClass('d-none').addClass('d-block');
 				fieldError.innerText = validationMessages.enterTheIin;
-				$(iinField).addClass('registration-form-error');
+				$(iinField).addClass('registration-form-error').addClass('is-invalid');
 			}
 		}
 	}
@@ -89,17 +110,17 @@ jq(function() {
 	checkIinIsValid = function(){
 		var iinField = $('input[name="IIN"]');
 		var iin = $(iinField).val();
-		var fieldError = $(iinField).nextAll('.field-error').first()[0];
+		var fieldError = $(iinField).nextAll('.invalid-feedback').first()[0];
 		
 		clearErrors = function(){
 			fieldError.innerText = '';
-			$(fieldError).css('display','none');
-			$(iinField).removeClass('registration-form-error');
+			$(fieldError).removeClass('d-block').addClass('d-none');
+			$(iinField).removeClass('registration-form-error').removeClass('is-invalid');
 		}
 		setErrors = function(message){
-			$(fieldError).css('display','block');
+			$(fieldError).removeClass('d-none').addClass('d-block');
 			fieldError.innerText = message;
-			$(iinField).addClass('registration-form-error');
+			$(iinField).addClass('registration-form-error').addClass('is-invalid');
 		}
 		
 		clearErrors();
@@ -140,6 +161,7 @@ jq(function() {
 		var day = iin.substr(4,2);
 		var trimmedDay = day.charAt(0) == '0' ? day.substr(1) : day;
 		var month = iin.substr(2,2);
+		var trimmedMonth = month.charAt(0) == '0' ? month.substr(1) : month;
 		var fullYear;
 		
 		switch(century){
@@ -157,28 +179,37 @@ jq(function() {
 				break;
 		}
 		
-		if(trimmedDay < 1 || trimmedDay > 31 || month < 1 || month > 12){
+		if(trimmedDay < 1 || trimmedDay > 31 || trimmedMonth < 1 || trimmedMonth > 12){
             return false;
-        } else if(month == 2 && (trimmedDay > 29 || (trimmedDay > 28 && fullYear % 4 != 0))){
+        } else if(trimmedMonth == 2 && (trimmedDay > 29 || (trimmedDay > 28 && fullYear % 4 != 0))){
                 return false;
-        } else if(trimmedDay > 30 && (month == 4 || month == 6 || month == 9 || month == 11)){
+        } else if(trimmedDay > 30 && (trimmedMonth == 4 || trimmedMonth == 6 || trimmedMonth == 9 || trimmedMonth == 11)){
             return false;
         }
 
-		var dateObject = new Date(fullYear, month-1, trimmedDay);
+		var dateObject = new Date(fullYear, trimmedMonth-1, trimmedDay);
 
         if(dateObject > new Date()){
         	return false;
         }
         
-        $('#birthdateDay-field').val(trimmedDay);
-		$('#birthdateMonth-field').val(month);
-        $('#birthdateYear-field').val(fullYear);
+        $("#birthdate").val(trimmedDay + "-" + monthNames[trimmedMonth-1] + "-" + fullYear);
+		
+		var selectedDay = day;
+        $('#birthdateDay').val(day);
+        
+        var selectedMonth = month;
+        $('#birthdateMonth').val(month);
+        
+        var selectedYear = fullYear;
+        $('#birthdateYear').val(fullYear);
+        
+        $('#birthdate-value').val(selectedYear + '-' + selectedMonth + '-' + selectedDay);
         
 		if(century%2==0){
-			$('#gender-field').val('F');
+			$('#gender').val('F');
 		} else{
-			$('#gender-field').val('M');
+			$('#gender').val('M');
 		}
 		return true;
 	}
