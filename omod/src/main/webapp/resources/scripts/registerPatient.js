@@ -284,6 +284,11 @@ function disable(elem){
     else {
     	elem.val("");
     }
+    
+    var fieldError = $(elem).nextAll('.invalid-feedback').first()[0];
+	$(fieldError).removeClass('d-block').addClass('d-none');
+	fieldError.innerText = '';
+	$(elem).removeClass('registration-form-error').removeClass('is-invalid');
 }
 
 function enable(elem){

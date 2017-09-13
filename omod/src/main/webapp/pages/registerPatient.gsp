@@ -172,7 +172,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		<div class="row mt-2 pt-2">
               <div class="form-check col-md-6">
                     <input id="checkbox-unknown-patient" type="checkbox" class="form-check-input"/>
-                    <label for="checkbox-unknown-patient">unknown</label>
+                    <label for="checkbox-unknown-patient">${ui.message("registrationapp.patient.demographics.unknown")}</label>
             </div>
           </div>
 		  
@@ -305,8 +305,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 	<div class="row justify-content-center">
 		<div class="form-group row">
 			<div id="confirmation" class="col">
-				<button id="cancelRegistration" class="btn btn-danger" style="background: #dc3545;" type="button">Cancel</button>
-				<button id="submitRegistration" type="submit" class="btn btn-success" style="background: #28a745;">Confirm</button>
+				<button id="cancelRegistration" class="btn btn-danger" style="background: #dc3545;" type="button">${ui.message("registrationapp.cancel")}</button>
+				<button id="submitRegistration" type="submit" class="btn btn-success" style="background: #28a745;">${ui.message("registrationapp.confirm")}</button>
 			</div>
 		</div>
 	</div>

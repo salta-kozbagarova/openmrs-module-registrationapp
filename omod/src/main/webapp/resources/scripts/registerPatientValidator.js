@@ -4,7 +4,13 @@ jq(function() {
 	var residenceCountry = 'Казахстан';
 	
 	$.fn.validate = function(){
-	    $(this).trigger('blur');   
+	    $(this).trigger('blur'); 
+	    if($(this).hasClass('disabled')){
+			var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+			$(fieldError).removeClass('d-block').addClass('d-none');
+			fieldError.innerText = '';
+			$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		}
 	};
 	
 	$('input[name="IIN"]').attr('data-validated-field',true);
@@ -78,6 +84,171 @@ jq(function() {
 		$(this).removeClass('registration-form-error').removeClass('is-invalid');
 		
 		if(!familyName.trim() || familyName.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	});
+	
+	$('input[name="documentType"]').attr('data-validated-field',true);
+	$('input[name="documentType"]').keyup(function(e){
+		if (e.which == 13) {
+			e.preventDefault();
+		}
+		var documentType = $(this).val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!documentType.trim() || documentType.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	})
+	.blur(function(){
+		var documentType = $(this).val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!documentType.trim() || documentType.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	});
+	
+	$('input[name="documentNumber"]').attr('data-validated-field',true);
+	$('input[name="documentNumber"]').keyup(function(e){
+		if (e.which == 13) {
+			e.preventDefault();
+		}
+		var documentNumber = $(this).val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!documentNumber.trim() || documentNumber.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	})
+	.blur(function(){
+		var documentNumber = $(this).val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!documentNumber.trim() || documentNumber.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	});
+	
+	$('input[name="documentDate"]').attr('data-validated-field',true);
+	$('input[name="documentDate"]').keyup(function(e){
+		if (e.which == 13) {
+			e.preventDefault();
+		}
+		var documentDate = $(this).val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!documentDate.trim() || documentDate.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	})
+	.blur(function(){
+		var documentDate = $(this).val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!documentDate.trim() || documentDate.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	});
+	
+	$('input[id="birthdate"]').attr('data-validated-field',true);
+	$('input[id="birthdate"]').keyup(function(e){
+		if (e.which == 13) {
+			e.preventDefault();
+		}
+		var birthdate = $(this).val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!birthdate.trim() || birthdate.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	})
+	.blur(function(){
+		var birthdate = $(this).val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!birthdate.trim() || birthdate.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	});
+	
+	$('input[name="gender"]').attr('data-validated-field',true);
+	$('input[name="gender"]').keyup(function(e){
+		if (e.which == 13) {
+			e.preventDefault();
+		}
+		var gender = $('#gender option:selected').val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!gender.trim() || gender.trim() == ''){
+			$(fieldError).removeClass('d-none').addClass('d-block');
+			fieldError.innerText = validationMessages.thisFieldIsRequired;
+			$(this).addClass('registration-form-error').addClass('is-invalid');
+		}
+	})
+	.blur(function(){
+		var gender = $('#gender option:selected').val();
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+		
+		if(!gender.trim() || gender.trim() == ''){
 			$(fieldError).removeClass('d-none').addClass('d-block');
 			fieldError.innerText = validationMessages.thisFieldIsRequired;
 			$(this).addClass('registration-form-error').addClass('is-invalid');
