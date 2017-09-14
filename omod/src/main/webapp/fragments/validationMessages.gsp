@@ -4,6 +4,7 @@
         incorrectIin: "${ ui.message("registrationapp.patient.iin.validation.incorrectIin") }",
         enterTheIin: "${ ui.message("registrationapp.patient.iin.validation.enterTheIin") }",
         theGivenIinHasAlreadyExistsInTheSystem: "${ ui.message("registrationapp.patient.iin.validation.theGivenIinHasAlreadyExistsInTheSystem") }",
-        doYouWantToUseAPatientWithTheGivenIin: "${ ui.message("registrationapp.patient.iin.validation.doYouWantToUseAPatientWithTheGivenIin") }"
+        doYouWantToUseAPatientWithTheGivenIin: "${ ui.message("registrationapp.patient.iin.validation.doYouWantToUseAPatientWithTheGivenIin") }",
+        incorrectEmail: "${ ui.message("registrationapp.patient.email.validation.incorrectEmail") }"
     }
 </script>

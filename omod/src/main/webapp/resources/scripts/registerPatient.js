@@ -240,7 +240,7 @@ jq(function() {
     jq('#checkbox-unknown-patient').click(function () {
         if (jq('#checkbox-unknown-patient').is(':checked')) {
             // disable all questions & sections except gender and registration date
-        	jq.each(jq('#registration').find("input, textarea, select"), function (index) {
+        	jq.each(jq('#registration .registration-field'), function (index) {
                 if (jq(this).attr('id') != 'checkbox-unknown-patient' && jq(this).attr('id') != 'gender') {
                 	disable(jq(this));
                 }
@@ -250,7 +250,7 @@ jq(function() {
             jq('#demographics-unknown').val('true');
         }
         else {
-        	jq.each(jq('#registration').find("input, textarea, select"), function (index) {
+        	jq.each(jq('#registration .registration-field'), function (index) {
                 if (jq(this).attr('id') != 'checkbox-unknown-patient' && jq(this).attr('id') != 'gender') {
                     enable(jq(this));
                 }
@@ -285,10 +285,7 @@ function disable(elem){
     	elem.val("");
     }
     
-    var fieldError = $(elem).nextAll('.invalid-feedback').first()[0];
-	$(fieldError).removeClass('d-block').addClass('d-none');
-	fieldError.innerText = '';
-	$(elem).removeClass('registration-form-error').removeClass('is-invalid');
+    jq(elem).clearErrors();
 }
 
 function enable(elem){

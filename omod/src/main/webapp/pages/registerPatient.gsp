@@ -207,7 +207,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		                            dataItems: 4,
 		                            left: true,
 		                            initialValue: initialNameFieldValue,
-		                            classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
+		                            classes: [(name == "givenName" || name == "familyName") ? "required-field" : ""]
 		                    ])}
 	
 	                    <% } %>
@@ -220,7 +220,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                 label: ui.message("registrationapp.patient.gender.chooseAGender"),
                                 formFieldName: "gender",
                                 options: genderOptions,
-                                classes: ["required"],
+                                classes: ["required-field"],
                                 initialValue: patient.gender,
                                 hideEmptyLabel: false,
                                 emptyOptionLabel: ui.message("registrationapp.patient.gender.chooseAGender")
@@ -234,6 +234,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                 showEstimated: true,
                                 estimated: patient.birthdateEstimated,
                                 initialValue: patient.birthdate,
+                                classes: ["required-field"],
                                 minDate: minBirthDate.time,
                                 maxDate: maxBirthDate.time
                         ])}

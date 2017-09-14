@@ -17,7 +17,7 @@
 	<% levels.each { level ->
         def classes = [ "level" ]
         if (parseAsBoolean(config.required) && level.required) {
-            classes.add("required")
+            classes.add("required-field")
         }
         def levelInitial = ""
         if (initialValue) {
@@ -30,10 +30,11 @@
 		<div class="form-group row">
 			<label for="${ config.id }-${ level.addressField.name }" class="form-group col-md-4">${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
 			<div class="form-group col-md-4">
-				<input type="text" class="form-control form-control-sm ${ classes.join(" ") }" id="${ config.id }-${ level.addressField.name }" 
+				<input type="text" class="form-control form-control-sm registration-field ${ classes.join(" ") }" id="${ config.id }-${ level.addressField.name }" 
 							name="${ level.addressField.name }" 
 							placeholder="${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }" 
 							value="${ ui.escapeAttribute(levelInitial) }">
+							<div class="invalid-feedback d-none"></div>
 			</div>
 			<div class="form-group col-md-4">
 				<button class="btn btn-success btn-sm addNewAddressEntry" style="background: #28a745;">${ui.message("registrationapp.addressHierarchyWidget.add")}</button>

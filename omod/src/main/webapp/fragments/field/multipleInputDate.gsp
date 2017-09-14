@@ -22,12 +22,17 @@
     } else {
         maxBirthDate = ''
     }
+    
+    def classes;
+    if (config.classes) {
+    	classes = config.classes.join(' ');
+    }
 %>
 
 <div class="form-group row">
 	<label for="${config.formFieldName}" class="form-group col-md-4">${config.label}</label>
 	<div class="form-group col-md-4">
-		<input type="text" id="${config.formFieldName}" class="form-control form-control-sm">
+		<input type="text" id="${config.formFieldName}" class="form-control form-control-sm registration-field ${classes}">
 		<div class="invalid-feedback d-none"></div>
 		<input type="hidden" id="${config.formFieldName}Day">
 		<input type="hidden" id="${config.formFieldName}Month">

@@ -1,7 +1,7 @@
 <%
     config.require("formFieldName")
     config.require("options")
-    def required = config.classes && config.classes.contains("required");
+    
     def classes;
     if (config.classes) {
     	classes = config.classes.join(' ');
@@ -12,7 +12,7 @@
 	<label for="${config.formFieldName}" class="form-group col-md-4">${config.label}</label>
 	<div class="form-group col-md-8">
 	
-		<select class="form-control form-control-sm ${classes}" 
+		<select class="form-control form-control-sm registration-field ${classes}" 
 					id="${config.formFieldName}" name="${config.formFieldName}">
 			
 			<% if(!config.hideEmptyLabel) { %>

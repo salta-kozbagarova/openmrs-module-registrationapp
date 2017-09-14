@@ -13,313 +13,134 @@ jq(function() {
 		}
 	};
 	
-	$('input[name="IIN"]').attr('data-validated-field',true);
-	$('input[name="IIN"]').keyup(function(e){
-		if (e.which == 13) {
-			e.preventDefault();
-		}
-		checkIinIsValid();
-	})
-	.blur(function(){
-		checkIinIsValid();
+	$.fn.clearErrors = function(){
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		$(fieldError).removeClass('d-block').addClass('d-none');
+		fieldError.innerText = '';
+		$(this).removeClass('registration-form-error').removeClass('is-invalid');
+	};
+	
+	$.fn.setErrors = function(message){
+		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+		$(fieldError).removeClass('d-none').addClass('d-block');
+		fieldError.innerText = message;
+		$(this).addClass('registration-form-error').addClass('is-invalid');
+	};
+	
+	$('.registration-field').each(function(index){
+		$(this).attr('data-validated-field',true);
 	});
 	
-	$('input[name="givenName"]').attr('data-validated-field',true);
-	$('input[name="givenName"]').keyup(function(e){
-		if (e.which == 13) {
-			e.preventDefault();
-		}
-		var givenName = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
+	$('.registration-field.required-field').each(function(index){
+		var isInput = $(this).is('input') || $(this).is('textarea');
+		var fieldValue;
 		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!givenName.trim() || givenName.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	})
-	.blur(function(){
-		var givenName = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!givenName.trim() || givenName.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	});
-	
-	$('input[name="familyName"]').attr('data-validated-field',true);
-	$('input[name="familyName"]').keyup(function(e){
-		if (e.which == 13) {
-			e.preventDefault();
-		}
-		var familyName = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!familyName.trim() || familyName.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	})
-	.blur(function(){
-		var familyName = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!familyName.trim() || familyName.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
+		if(isInput){
+			$(this).keyup(function(e){
+				if (e.which == 13) {
+					e.preventDefault();
+				}
+				fieldValue = $(this).val();
+				$(this).clearErrors();
+				if(!fieldValue.trim() || fieldValue.trim() == ''){
+					$(this).setErrors(validationMessages.thisFieldIsRequired);
+				}
+			})
+			.blur(function(){
+				fieldValue = $(this).val();
+				$(this).clearErrors();
+				if(!fieldValue.trim() || fieldValue.trim() == ''){
+					$(this).setErrors(validationMessages.thisFieldIsRequired);
+				}
+			});
+		} else{
+			$(this).change(function(){
+				fieldValue = $(this).find(':selected').val();
+				$(this).clearErrors();
+				if(!fieldValue.trim() || fieldValue.trim() == ''){
+					$(this).setErrors(validationMessages.thisFieldIsRequired);
+				}
+			});
 		}
 	});
 	
-	$('input[name="documentType"]').attr('data-validated-field',true);
-	$('input[name="documentType"]').keyup(function(e){
-		if (e.which == 13) {
-			e.preventDefault();
-		}
-		var documentType = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!documentType.trim() || documentType.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	})
-	.blur(function(){
-		var documentType = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!documentType.trim() || documentType.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
+	$('.registration-field.iin-field').each(function(index){
+		$(this).keyup(function(e){
+			if (e.which == 13) {
+				e.preventDefault();
+			}
+			checkIinIsValid($(this));
+		})
+		.blur(function(){
+			checkIinIsValid($(this));
+		});
 	});
 	
-	$('input[name="documentNumber"]').attr('data-validated-field',true);
-	$('input[name="documentNumber"]').keyup(function(e){
-		if (e.which == 13) {
-			e.preventDefault();
-		}
-		var documentNumber = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!documentNumber.trim() || documentNumber.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	})
-	.blur(function(){
-		var documentNumber = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!documentNumber.trim() || documentNumber.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
+	$('.registration-field.email-field').each(function(index){
+		$(this).keyup(function(e){
+			if (e.which == 13) {
+				e.preventDefault();
+			}
+			checkEmailIsValid($(this));
+		})
+		.blur(function(){
+			checkEmailIsValid($(this));
+		});
 	});
 	
-	$('input[name="documentDate"]').attr('data-validated-field',true);
-	$('input[name="documentDate"]').keyup(function(e){
-		if (e.which == 13) {
-			e.preventDefault();
-		}
-		var documentDate = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!documentDate.trim() || documentDate.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	})
-	.blur(function(){
-		var documentDate = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!documentDate.trim() || documentDate.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	});
-	
-	$('input[id="birthdate"]').attr('data-validated-field',true);
-	$('input[id="birthdate"]').keyup(function(e){
-		if (e.which == 13) {
-			e.preventDefault();
-		}
-		var birthdate = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!birthdate.trim() || birthdate.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	})
-	.blur(function(){
-		var birthdate = $(this).val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!birthdate.trim() || birthdate.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	});
-	
-	$('input[name="gender"]').attr('data-validated-field',true);
-	$('input[name="gender"]').keyup(function(e){
-		if (e.which == 13) {
-			e.preventDefault();
-		}
-		var gender = $('#gender option:selected').val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!gender.trim() || gender.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	})
-	.blur(function(){
-		var gender = $('#gender option:selected').val();
-		var fieldError = $(this).nextAll('.invalid-feedback').first()[0];
-		
-		$(fieldError).removeClass('d-block').addClass('d-none');
-		fieldError.innerText = '';
-		$(this).removeClass('registration-form-error').removeClass('is-invalid');
-		
-		if(!gender.trim() || gender.trim() == ''){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = validationMessages.thisFieldIsRequired;
-			$(this).addClass('registration-form-error').addClass('is-invalid');
-		}
-	});
-	
-	checkIinIsRequired = function(){
-		var iinField = $('input[name="IIN"]');
+	checkIinIsRequired = function(elem){
+		var iinField = $(elem);
 		var iin = $(iinField).val();
-		var fieldError = $(iinField).nextAll('.invalid-feedback').first()[0];
 		if(!iin.trim()){
 			var citizenship = $('input[name="citizenship"]').val();
-			/*var estimatedMonths = $('#birthdateMonths-field').val();
-			var estimatedYears = $('#birthdateYears-field').val();
-			var birthDay = $('#birthdateDay-field').val();
-			var birthMonth = $('#birthdateMonth-field').val();
-			var birthYear = $('#birthdateYear-field').val();*/
-			
-			//var months = estimatedYears ? (estimatedYears*12 + (estimatedMonths ? estimatedMonths : 0)) : getMonths(birthYear, birthMonth, birthDay);
 			var months = getMonths($('#birthdateDay').val(), $('#birthdateMonth').val(), $('#birthdateYear').val());
-			
 			if(citizenship.trim() == residenceCountry && months >= 3){
-				$(fieldError).removeClass('d-none').addClass('d-block');
-				fieldError.innerText = validationMessages.enterTheIin;
-				$(iinField).addClass('registration-form-error').addClass('is-invalid');
+				$(iinField).setErrors(validationMessages.enterTheIin);
 			}
 		}
 	}
 	
-	checkIinIsValid = function(){
-		var iinField = $('input[name="IIN"]');
+	checkIinIsValid = function(elem){
+		var iinField = $(elem);
 		var iin = $(iinField).val();
-		var fieldError = $(iinField).nextAll('.invalid-feedback').first()[0];
 		
-		clearErrors = function(){
-			fieldError.innerText = '';
-			$(fieldError).removeClass('d-block').addClass('d-none');
-			$(iinField).removeClass('registration-form-error').removeClass('is-invalid');
-		}
-		setErrors = function(message){
-			$(fieldError).removeClass('d-none').addClass('d-block');
-			fieldError.innerText = message;
-			$(iinField).addClass('registration-form-error').addClass('is-invalid');
-		}
-		
-		clearErrors();
+		$(iinField).clearErrors();
 		
 		if(!iin.trim() || iin.trim() == ''){
-			checkIinIsRequired();
+			checkIinIsRequired(elem);
 			return null;
 		}
 		if(iin.match(/^\d{12}$/) === null){
-			setErrors(validationMessages.incorrectIin);
+			$(iinField).setErrors(validationMessages.incorrectIin);
 		} else {
 			checkIINUnique(iin).success(function(response){
 				if(!response){
-					setErrors(validationMessages.theGivenIinHasAlreadyExistsInTheSystem);
+					$(iinField).setErrors(validationMessages.theGivenIinHasAlreadyExistsInTheSystem);
 				} else{
-					clearErrors();
+					$(iinField).clearErrors();
 					
 					if(!checkBirthdate(iin)){
-						setErrors(validationMessages.incorrectIin);
+						$(iinField).setErrors(validationMessages.incorrectIin);
 					}
 					
 					if(!checkIinControlNum(iin)){
-						setErrors(validationMessages.incorrectIin);
+						$(iinField).setErrors(validationMessages.incorrectIin);
 					}
 				}
 			});
 		}
 	}
+	
+	checkEmailIsValid = function(elem){
+		var emailField = $(elem);
+		var emailAddress = $(emailField).val();
+		$(emailField).clearErrors();
+		
+	    var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+	    if(!pattern.test(emailAddress)){
+	    	$(emailField).setErrors(validationMessages.incorrectEmail);
+	    }
+	};
 	
 	checkBirthdate = function(iin){
 		var century = iin.charAt(6);
