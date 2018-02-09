@@ -4,6 +4,7 @@
     config.require("conceptId")
     
     def maxResults = config.maxResults ? config.maxResults : 20;
+    def ttmp = conceptAnswers;
     def conceptAnswers = new JsonBuilder(conceptAnswers);
     
     def classes;
@@ -14,13 +15,19 @@
 
 <script type="text/javascript">
     jq(function() {
+    console.log(${ttmp});
     var consAnswers = ${conceptAnswers};
         jq('#${ config.formFieldName }').autocomplete({
             source: function(request, response){
-            	var respData = jq.grep(consAnswers, function(elem){
-					return elem.value.match(new RegExp(request.term, 'i')) != null;
-				});
-				respData = respData.slice(0,${maxResults});
+            	var respData;
+            	if(consAnswers.length <= ${maxResults}){
+            		respData = consAnswers;
+            	} else{
+	            	respData = jq.grep(consAnswers, function(elem){
+						return elem.value.match(new RegExp(request.term, 'i')) != null;
+					});
+					respData = respData.slice(0,${maxResults});
+				}
 				response(respData);
             },
             autoFocus: false,

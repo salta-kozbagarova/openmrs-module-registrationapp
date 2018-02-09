@@ -15,13 +15,24 @@ import org.openmrs.util.LocaleUtility;
 
 public class ConceptFragmentController {
 
-	public void controller(FragmentModel model, @FragmentParam(required = true, value = "conceptId") Integer conceptId) throws Exception {
+	public void controller(FragmentModel model, @FragmentParam(value = "conceptId") Concept concept) throws Exception {
+		Collection<Map<String, String>> collection = new ArrayList<Map<String, String>>();
 		
-		Concept concept = Context.getConceptService().getConcept(conceptId);
 		if(concept == null){
-			model.put("conceptAnswers", new ArrayList<Map<String, String>>());
+			Map<String, String> tmp = new HashMap<String, String>();
+			String fullname = "Test";
+			tmp.put("label", fullname);
+			tmp.put("value", fullname);
+			collection.add(tmp);
+			model.put("conceptAnswers", collection);
+			tmp = new HashMap<String, String>();
+			fullname = "Тест";
+			tmp.put("label", fullname);
+			tmp.put("value", fullname);
+			collection.add(tmp);
+			model.put("conceptAnswers", collection);
 		} else{
-			Collection<Map<String, String>> collection = new ArrayList<Map<String, String>>();
+			
 			Map<String, String> conceptMap;
 			Locale locale = LocaleUtility.getDefaultLocale();
 			
@@ -34,7 +45,22 @@ public class ConceptFragmentController {
 				conceptMap.put("value", fullname);
 				collection.add(conceptMap);
 			}
-			
+			Map<String, String> tmp = new HashMap<String, String>();
+			String fullname = "Test concept created";
+			tmp.put("label", fullname);
+			tmp.put("value", fullname);
+			collection.add(tmp);
+			tmp = new HashMap<String, String>();
+			fullname = "Тест концепт создан";
+			tmp.put("label", fullname);
+			tmp.put("value", fullname);
+			collection.add(tmp);
+			tmp = new HashMap<String, String>();
+			fullname = "Тест концепт "+concept.getDisplayString()+" "+concept.getUuid()+" "+concept.getId()+" "+locale+" "+concept.getAnswers().size();
+			tmp.put("label", fullname);
+			tmp.put("value", fullname);
+			collection.add(tmp);
+			model.put("conceptAnswers", collection);
 			model.put("conceptAnswers", collection);
 		}
 	}
